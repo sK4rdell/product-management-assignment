@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "ProductUpdated",
+  "namespace": "com.ikea.events",
+  "fields": [
+    { "name": "eventTime", "type": "long", "logicalType": "timestamp-millis" },
+    { "name": "product", "type": "Product" }
+  ]
+}

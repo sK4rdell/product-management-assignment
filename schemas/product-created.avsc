@@ -1,0 +1,49 @@
+{
+  "type": "record",
+  "name": "ProductCreated",
+  "namespace": "com.ikea.events",
+  "fields": [
+    { "name": "eventTime", "type": "long", "logicalType": "timestamp-millis" },
+    {
+      "name": "product",
+      "type": {
+        "type": "record",
+        "name": "Product",
+        "fields": [
+          { "name": "id", "type": "int" },
+          { "name": "name", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "price", "type": "double" },
+          { "name": "sku", "type": "string" },
+          { "name": "dimensions", "type": "string" },
+          { "name": "weight", "type": "double" },
+          {
+            "name": "category",
+            "type": {
+              "type": "record",
+              "name": "Category",
+              "fields": [
+                { "name": "name", "type": "string" },
+                { "name": "description", "type": "string" }
+              ]
+            }
+          },
+          {
+            "name": "stock",
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "record",
+                "name": "Stock",
+                "fields": [
+                  { "name": "quantity", "type": "int" },
+                  { "name": "location", "type": "string" }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

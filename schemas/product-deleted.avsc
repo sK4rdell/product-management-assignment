@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "ProductDeleted",
+  "namespace": "com.example",
+  "fields": [
+    {
+      "name": "productId",
+      "type": "string"
+    },
+    {
+      "name": "timestamp",
+      "type": "long"
+    }
+  ]
+}
