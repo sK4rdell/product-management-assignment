@@ -26,10 +26,7 @@ type StockDTO = {
   location: string;
 };
 
-type CategoryDTO = {
-  name: string;
-  description: string;
-};
+type CategoryDTO = Pick<Category, "id" | "name" | "description">;
 
 type DiscountDTO = Pick<
   Discount,

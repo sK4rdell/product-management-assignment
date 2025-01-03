@@ -2,6 +2,7 @@ import "./db";
 import express from "express";
 import { productRouter } from "./api/products";
 import { producer } from "./kafka";
+import { categoryRouter } from "./api/categories/category.router";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
 
 const startServer = async () => {

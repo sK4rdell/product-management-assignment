@@ -2,6 +2,7 @@ import { Result, StatusError } from "@kardell/result";
 import { categoryRepo } from "./category.repo";
 import { toCategoryDTO } from "./category.converter";
 import { CategoryDTO } from "../../models";
+import { CreateCategoryInput, UpdateCategoryInput } from "./category.model";
 
 const getCategoryById = async (
   id: number
@@ -16,15 +17,18 @@ const getCategories = async (): Promise<Result<CategoryDTO[], StatusError>> => {
 };
 
 const createCategory = async (
-  category: CategoryPost
+  category: CreateCategoryInput
 ): Promise<Result<CategoryDTO, StatusError>> => {
-  const res = await categoryRepo.insertCategory(category);
-  return res.apply(toCategoryDTO);
+  const { data, error } = await categoryRepo.insertCategory(category);
+  if (error) {
+    return Result.failure(error);
+  }
+  return getCategoryById(data.id);
 };
 
 const patchCategory = async (
   id: number,
-  category: CategoryPatch
+  category: UpdateCategoryInput
 ): Promise<Result<CategoryDTO, StatusError>> => {
   const { data: current, error } = await categoryRepo.getCategoryById(id);
   if (error) {
@@ -41,9 +45,16 @@ const patchCategory = async (
   );
 };
 
+const deleteCategory = async (
+  id: number
+): Promise<Result<void, StatusError>> => {
+  return categoryRepo.deleteCategory(id);
+};
+
 export const categoriesService = {
   getCategoryById,
   getCategories,
   createCategory,
   patchCategory,
+  deleteCategory,
 };

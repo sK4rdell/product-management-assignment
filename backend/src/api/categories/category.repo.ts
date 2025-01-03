@@ -2,6 +2,7 @@ import { Result, StatusError } from "@kardell/result";
 import { sql } from "../../db";
 import { Sql } from "postgres";
 import { ID } from "../../models";
+import { Category, CreateCategoryInput } from "./category.model";
 
 const getCategoryById = async (
   id: number,
@@ -44,7 +45,7 @@ const getAllCategories = async (
 };
 
 const insertCategory = async (
-  category: CategoryPost,
+  category: CreateCategoryInput,
   db: Sql = sql
 ): Promise<Result<ID, StatusError>> => {
   try {
@@ -61,7 +62,7 @@ const insertCategory = async (
 };
 
 const updateCategory = async (
-  category: CategoryPost & { id: number },
+  category: CreateCategoryInput & { id: number },
   db: Sql = sql
 ): Promise<Result<null, StatusError>> => {
   try {
@@ -79,9 +80,26 @@ const updateCategory = async (
   }
 };
 
+const deleteCategory = async (
+  id: number,
+  db: Sql = sql
+): Promise<Result<void, StatusError>> => {
+  try {
+    await db`
+            delete from categories
+            where id = ${id}
+        `;
+    return Result.of(undefined);
+  } catch (error) {
+    console.error("Failed to delete category", error);
+    return Result.failure(StatusError.Internal());
+  }
+};
+
 export const categoryRepo = {
   getAllCategories,
   insertCategory,
   updateCategory,
   getCategoryById,
+  deleteCategory,
 };
