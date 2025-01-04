@@ -50,7 +50,7 @@ CREATE TABLE product_discounts (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
     percentage DECIMAL(5, 2) NOT NULL CHECK (
-        discount_percentage BETWEEN 0
+        percentage BETWEEN 0
         AND 100
     ),
     start_date TIMESTAMP NOT NULL,

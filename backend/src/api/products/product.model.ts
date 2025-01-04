@@ -1,12 +1,9 @@
-import { StockDTO, CategoryDTO, Dimension } from "~/models";
+import { StockDTO, Dimension } from "../../models";
+import { Category } from "../categories/category.model";
+
 type Stock = StockDTO & {
   id: number;
   lastUpdated: Date;
-};
-
-type Category = CategoryDTO & {
-  id: number;
-  createdAt: Date;
 };
 
 export type Product = {

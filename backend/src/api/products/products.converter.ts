@@ -1,4 +1,5 @@
 import { ProductDTO } from "../../models";
+import { toCategoryDTO } from "../categories/category.converter";
 import { Product } from "./product.model"; // Ensure this path is correct
 
 export const toProductDTO = (product: Product): ProductDTO => {
@@ -9,10 +10,7 @@ export const toProductDTO = (product: Product): ProductDTO => {
     sku: product.sku,
     dimensions: product.dimensions,
     weight: product.weight,
-    category: {
-      name: product.category.name,
-      description: product.category.description,
-    },
+    category: toCategoryDTO(product.category),
     stock: product.stock.map((s) => ({
       quantity: s.quantity,
       location: s.location,
