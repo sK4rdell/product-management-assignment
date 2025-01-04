@@ -1,0 +1,7 @@
+auth:
+  type: disabled
+kafka:
+  clusters:
+    - name: local
+      bootstrapServers: kafka_b:9094
+      schemaRegistry: http://schema-registry:8081
