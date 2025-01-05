@@ -18,6 +18,9 @@ app.get("/health", (req, res) => {
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
 
+app.use((req, res) => {
+  res.status(404).json({ message: "Not Found" });
+});
 const startServer = async () => {
   const connectionsRes = await producer.connect();
   connectionsRes.onFailurePeek((error) => {
