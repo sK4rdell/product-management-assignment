@@ -1,4 +1,5 @@
 import "./db";
+import "dotenv/config";
 import express from "express";
 import { productRouter } from "./api/products";
 import { producer } from "./kafka";

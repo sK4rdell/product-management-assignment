@@ -1,10 +1,10 @@
 import { describe, expect, test } from "@jest/globals";
-import { CreateCategoryInput } from "./category.model";
+import { Category, CreateCategoryInput } from "./category.model";
 import { http } from "../../../tests/helpers/http";
 import { CategoryDTO } from "../../models";
+import { createTestCategory } from "../../../tests/helpers/category";
 
 describe("Categories API", () => {
-  let category: CategoryDTO;
   describe("POST /categories", () => {
     const validInput: CreateCategoryInput = {
       name: "Kitchen",
@@ -35,11 +35,15 @@ describe("Categories API", () => {
         id: expect.any(Number),
         ...validInput,
       });
-      category = resp.data;
     });
   });
 
   describe("GET /categories", () => {
+    let category: Category;
+    beforeAll(async () => {
+      category = await createTestCategory();
+    });
+
     test("should return 200 with a list of categories", async () => {
       const resp = await http.get<CategoryDTO[]>("api/categories");
       expect(resp.error).toBeFalsy();
@@ -49,6 +53,11 @@ describe("Categories API", () => {
   });
 
   describe("PATCH /categories/:id", () => {
+    let category: Category;
+    beforeAll(async () => {
+      category = await createTestCategory();
+    });
+
     const validInput: CreateCategoryInput = {
       name: "Updated Kitchen",
       description: "Updated description for kitchen products",
@@ -90,6 +99,11 @@ describe("Categories API", () => {
   });
 
   describe("GET /categories/:id", () => {
+    let category: Category;
+    beforeAll(async () => {
+      category = await createTestCategory();
+    });
+
     test("should return 200 with a category", async () => {
       const resp = await http.get<CategoryDTO>(`api/categories/${category.id}`);
       expect(resp.error).toBeFalsy();
@@ -105,8 +119,14 @@ describe("Categories API", () => {
   });
 
   describe("DELETE /categories/:id", () => {
+    let category: Category;
+    beforeAll(async () => {
+      category = await createTestCategory();
+    });
+
     test("should return ok if category is deleted", async () => {
       const resp = await http.delete(`api/categories/${category.id}`);
+      console.log("resp", resp);
       expect(resp.error).toBeFalsy();
     });
 

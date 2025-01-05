@@ -46,8 +46,16 @@ services:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka_b:9094,PLAINTEXT_INTERNAL://localhost:29092
-      # SCHEMA_REGISTRY_DEBUG: 'true'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka_b:9094
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_DEBUG: "true"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   schema-register:
     image: curlimages/curl
     profiles:
@@ -61,8 +69,6 @@ services:
         condition: service_healthy
   db:
     image: postgres:latest
-    profiles:
-      - dev
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password

@@ -131,4 +131,5 @@ class KafkaProducerClient {
 const brokers = process.env.KAFKA_BROKERS?.split(",") ?? [];
 const registryURL = process.env.SCHEMA_REGISTRY_URL ?? "";
 
+console.log("Kafka brokers:", brokers);
 export const producer = new KafkaProducerClient(registryURL, brokers);

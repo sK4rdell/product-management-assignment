@@ -3,7 +3,7 @@ import { ValidationSchema } from "../../middlewares/validation";
 
 export const categoryIdSchema: ValidationSchema = {
   params: z.object({
-    categoryId: z.number().int(),
+    categoryId: z.string().regex(/^\d+$/).transform(Number),
   }),
 };
 
@@ -17,8 +17,8 @@ export const createCategoryValidationSchema: ValidationSchema = {
 };
 
 export const updateCategorySchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
+  name: z.string().min(3).optional(),
+  description: z.string().min(10).optional(),
 });
 
 export const updateCategoryValidationSchema: ValidationSchema = {

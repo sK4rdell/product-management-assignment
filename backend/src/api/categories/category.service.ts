@@ -48,6 +48,24 @@ const patchCategory = async (
 const deleteCategory = async (
   id: number
 ): Promise<Result<void, StatusError>> => {
+  // first check if any products are using this category
+  const { data: productIDs, error } =
+    await categoryRepo.getProductIDsByCategory(id);
+
+  if (error) {
+    console.error("Failed to get products by category", error);
+    return Result.failure(StatusError.Internal());
+  }
+  // if there are products using this category, return an error
+  if (productIDs.length > 0) {
+    return Result.failure(
+      StatusError.BadRequest().withDetails(
+        `category is in use by products: [${productIDs
+          .map((x) => x.id)
+          .join(", ")}]`
+      )
+    );
+  }
   return categoryRepo.deleteCategory(id);
 };
 

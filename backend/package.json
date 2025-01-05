@@ -9,7 +9,8 @@
     "build": "tsc",
     "migration:up": "dbmate up",
     "migration:down": "dbmate rollback",
-    "migration:new": "dbmate new"
+    "migration:new": "dbmate new",
+    "debug": "nodemon --inspect src/index.ts"
   },
   "dependencies": {
     "@kafkajs/confluent-schema-registry": "^3.4.1",
@@ -28,6 +29,7 @@
     "dbmate": "^2.24.2",
     "jest": "^29.6.2",
     "nodemon": "^3.1.9",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }

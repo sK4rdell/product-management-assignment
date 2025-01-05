@@ -85,13 +85,36 @@ const deleteCategory = async (
   db: Sql = sql
 ): Promise<Result<void, StatusError>> => {
   try {
-    await db`
+    const [{ count }]: [{ count: number }] = await db`
+        with deleted as (
             delete from categories
             where id = ${id}
+            returning *
+        ) select count(*) from deleted
         `;
+    if (count == 0) {
+      return Result.failure(StatusError.NotFound());
+    }
     return Result.of(undefined);
   } catch (error) {
     console.error("Failed to delete category", error);
+    return Result.failure(StatusError.Internal());
+  }
+};
+
+const getProductIDsByCategory = async (
+  categoryId: number,
+  db: Sql = sql
+): Promise<Result<ID[], StatusError>> => {
+  try {
+    const ids = await db<ID[]>`
+        select id
+        from products
+        where category_id = ${categoryId}
+    `;
+    return Result.of(ids);
+  } catch (error) {
+    console.error("Failed to get products by category", error);
     return Result.failure(StatusError.Internal());
   }
 };
@@ -102,4 +125,5 @@ export const categoryRepo = {
   updateCategory,
   getCategoryById,
   deleteCategory,
+  getProductIDsByCategory,
 };

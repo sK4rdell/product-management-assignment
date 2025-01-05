@@ -1,7 +1,10 @@
+import "dotenv/config";
 import { Result } from "@kardell/result";
 import postgres, { Sql } from "postgres";
 
-const sql = postgres({ max: 10 });
+console.log("Hello, world!", process.env.DATABASE_URL);
+
+const sql = postgres(process.env.DATABASE_URL ?? "", { max: 10 });
 
 const transaction = async <T, E extends Error = Error>(
   f: (arg: Sql) => Promise<Result<T, E>>
