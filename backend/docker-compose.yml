@@ -24,6 +24,15 @@ services:
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
       # - BITNAMI_DEBUG=yes
       - KAFKA_CFG_NUM_PARTITIONS=2
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-broker-api-versions.sh --bootstrap-server=localhost:9092",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   kafka-ui:
     container_name: kafka-ui
@@ -67,6 +76,19 @@ services:
     depends_on:
       schema-registry:
         condition: service_healthy
+
+  topic-setup:
+    image: bitnami/kafka:3.4
+    profiles:
+      - dev
+    depends_on:
+      kafka_b:
+        condition: service_healthy
+    volumes:
+      - ./scripts/create-topics.sh:/create-topics.sh
+    entrypoint: ["/bin/sh"]
+    command: ["/create-topics.sh"]
+
   db:
     image: postgres:latest
     environment:
