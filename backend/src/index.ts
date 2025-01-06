@@ -2,7 +2,7 @@ import "./db";
 import "dotenv/config";
 import express from "express";
 import { productRouter } from "./api/products";
-import { producer } from "./kafka";
+import { producer } from "./events/kafka";
 import { categoryRouter } from "./api/categories/category.router";
 
 const app = express();

@@ -1,26 +1,16 @@
 import { Kafka, Producer, RetryOptions } from "kafkajs";
 import { SchemaRegistry } from "@kafkajs/confluent-schema-registry";
 import { Result } from "@kardell/result";
-import { MemCache } from "./cache";
+import { MemCache } from "../cache";
+import { ServiceEvent, ValidEvent } from "./model";
 
 type KafkaPayload = Buffer<ArrayBufferLike>;
-
-export type SchemaType =
-  | "PRODUCT_CREATED"
-  | "PRODUCT_UPDATED"
-  | "PRODUCT_DELETED";
 
 class KafkaError extends Error {
   constructor(message: string, public readonly cause?: Error) {
     super(message);
     this.name = "KafkaError";
   }
-}
-
-interface SchemaPayload {
-  PRODUCT_CREATED: { eventTime: number; product: Record<string, any> };
-  PRODUCT_UPDATED: { eventTime: number; product: Record<string, any> };
-  PRODUCT_DELETED: { productId: string; timestamp: number };
 }
 
 class KafkaProducerClient {
@@ -70,17 +60,17 @@ class KafkaProducerClient {
   }
 
   private async getSchemaId(
-    type: SchemaType
+    subject: string
   ): Promise<Result<number, KafkaError>> {
-    const cachedId = this.schemaCache.get(type);
+    const cachedId = this.schemaCache.get(subject);
     if (cachedId) {
       return Result.of(cachedId);
     }
     try {
       const id = await this.registry.getLatestSchemaId(
-        `${type.toLowerCase()}-value`
+        `${subject.toLowerCase()}`
       );
-      this.schemaCache.put(type, id);
+      this.schemaCache.put(subject, id);
       return Result.of(id);
     } catch (error) {
       return Result.failure(
@@ -89,20 +79,22 @@ class KafkaProducerClient {
     }
   }
 
-  async send<T extends SchemaType>(
-    topic: string,
-    type: T,
-    payload: SchemaPayload[T]
-  ): Promise<Result<void, KafkaError>> {
-    const schemaResult = await this.getSchemaId(type);
-    if (schemaResult.error) return Result.failure(schemaResult.error);
+  async send<V>(payload: ServiceEvent<V>): Promise<Result<void, KafkaError>> {
+    const schemaResult = await this.getSchemaId(payload.subject);
+    if (schemaResult.error) {
+      console.error("Failed to get schema ID", schemaResult.error);
+      return Result.failure(schemaResult.error);
+    }
 
     const encodedResult = await this.encode(schemaResult.data, payload);
-    if (encodedResult.error) return Result.failure(encodedResult.error);
+    if (encodedResult.error) {
+      console.error("Failed to encode message", encodedResult.error);
+      return Result.failure(encodedResult.error);
+    }
 
     try {
       await this.producer.send({
-        topic,
+        topic: payload.topic,
         messages: [{ value: encodedResult.data }],
       });
       return Result.of(undefined);
