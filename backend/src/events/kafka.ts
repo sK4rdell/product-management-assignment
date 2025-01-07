@@ -88,7 +88,6 @@ class KafkaProducerClient {
 
     const encodedResult = await this.encode(schemaResult.data, event.payload);
     if (encodedResult.error) {
-      console.error("Failed to encode message", encodedResult.error);
       return Result.failure(encodedResult.error);
     }
 
@@ -110,7 +109,6 @@ class KafkaProducerClient {
     payload: any
   ): Promise<Result<KafkaPayload, KafkaError>> {
     try {
-      console.log("Encoding payload", JSON.stringify(payload));
       const encodedValue = await this.registry.encode(schemaID, payload);
       return Result.of(encodedValue);
     } catch (error) {
@@ -122,7 +120,6 @@ class KafkaProducerClient {
           errorDetails: error instanceof Error ? error : undefined,
         });
       }
-      console.error("Failed to encode message", error);
       return Result.failure(
         new KafkaError("Failed to encode message", error as Error)
       );
