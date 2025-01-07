@@ -111,8 +111,16 @@ const insertProductRow = async (
    `;
 
     return Result.of(id);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to insert product", error);
+    if (error.code === "23505") {
+      // Unique constraint violation
+      return Result.failure(
+        StatusError.BadRequest().withDetails(
+          `Product with sku [${product.sku}] already exists`
+        )
+      );
+    }
     return Result.failure(StatusError.Internal());
   }
 };
@@ -137,8 +145,22 @@ const insertProduct = async (
         insert into stock ${sql(stock, "product_id", "quantity", "location")};
     `;
     return idRes;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to insert product inventory", error);
+    if (error.code === "23503") {
+      // Foreign key violation
+      return Result.failure(
+        StatusError.BadRequest().withDetails(
+          "Invalid product or location reference"
+        )
+      );
+    }
+    if (error.code === "23505") {
+      // Unique constraint violation
+      return Result.failure(
+        StatusError.BadRequest().withDetails("Duplicate stock entry")
+      );
+    }
     return Result.failure(StatusError.Internal());
   }
 };

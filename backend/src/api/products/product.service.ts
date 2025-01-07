@@ -44,14 +44,14 @@ const createProduct = async (
   productReq: CreateProductInput
 ): Promise<Result<Product, StatusError>> => {
   return transaction<Product, StatusError>(async (t) => {
-    const {
-      data: { id },
-      error,
-    } = await productRepo.insertProduct(productReq, t);
+    const { data, error } = await productRepo.insertProduct(productReq, t);
     if (error) {
       return Result.failure(error);
     }
-    const { data: product, error: getProdError } = await getProductById(id, t);
+    const { data: product, error: getProdError } = await getProductById(
+      data.id,
+      t
+    );
     if (getProdError) {
       return Result.failure(getProdError);
     }
