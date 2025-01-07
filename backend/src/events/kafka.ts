@@ -79,14 +79,14 @@ class KafkaProducerClient {
     }
   }
 
-  async send<V>(payload: ServiceEvent<V>): Promise<Result<void, KafkaError>> {
-    const schemaResult = await this.getSchemaId(payload.subject);
+  async send<V>(event: ServiceEvent<V>): Promise<Result<void, KafkaError>> {
+    const schemaResult = await this.getSchemaId(event.subject);
     if (schemaResult.error) {
       console.error("Failed to get schema ID", schemaResult.error);
       return Result.failure(schemaResult.error);
     }
 
-    const encodedResult = await this.encode(schemaResult.data, payload);
+    const encodedResult = await this.encode(schemaResult.data, event.payload);
     if (encodedResult.error) {
       console.error("Failed to encode message", encodedResult.error);
       return Result.failure(encodedResult.error);
@@ -94,7 +94,7 @@ class KafkaProducerClient {
 
     try {
       await this.producer.send({
-        topic: payload.topic,
+        topic: event.topic,
         messages: [{ value: encodedResult.data }],
       });
       return Result.of(undefined);
@@ -110,9 +110,19 @@ class KafkaProducerClient {
     payload: any
   ): Promise<Result<KafkaPayload, KafkaError>> {
     try {
+      console.log("Encoding payload", JSON.stringify(payload));
       const encodedValue = await this.registry.encode(schemaID, payload);
       return Result.of(encodedValue);
     } catch (error) {
+      if (error instanceof Error) {
+        console.error("Schema validation error details:", {
+          payload,
+          schemaID,
+          errorMessage: error.message,
+          errorDetails: error instanceof Error ? error : undefined,
+        });
+      }
+      console.error("Failed to encode message", error);
       return Result.failure(
         new KafkaError("Failed to encode message", error as Error)
       );

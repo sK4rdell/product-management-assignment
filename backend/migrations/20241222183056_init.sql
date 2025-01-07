@@ -12,10 +12,10 @@ CREATE TABLE products (
     category_id INTEGER REFERENCES categories(id),
     name VARCHAR(200) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    price REAL NOT NULL,
     sku VARCHAR(50) UNIQUE NOT NULL,
     dimensions JSON,
-    weight DECIMAL(8, 2),
+    weight INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE orders (
     customer_name VARCHAR(200) NOT NULL,
     email VARCHAR(255) NOT NULL,
     address TEXT NOT NULL,
-    total_amount DECIMAL(10, 2) NOT NULL,
+    total_amount INTEGER NOT NULL,
     status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -42,14 +42,14 @@ CREATE TABLE order_items (
     order_id INTEGER REFERENCES orders(id),
     product_id INTEGER REFERENCES products(id),
     quantity INTEGER NOT NULL,
-    price_at_time DECIMAL(10, 2) NOT NULL,
+    price_at_time REAL NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE product_discounts (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-    percentage DECIMAL(5, 2) NOT NULL CHECK (
+    percentage INTEGER NOT NULL CHECK (
         percentage BETWEEN 0
         AND 100
     ),
@@ -65,8 +65,8 @@ DROP TABLE IF EXISTS orders;
 
 DROP TABLE IF EXISTS stock;
 
+DROP TABLE IF EXISTS product_discounts;
+
 DROP TABLE IF EXISTS products;
 
 DROP TABLE IF EXISTS categories;
-
-DROP TABLE IF EXISTS product_discounts;

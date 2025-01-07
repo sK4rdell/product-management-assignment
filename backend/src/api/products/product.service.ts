@@ -1,17 +1,15 @@
 import { Result, StatusError } from "@kardell/result";
 import { productRepo } from "./product.repo";
-import { toProductDTO } from "./products.converter";
 import { sql, transaction } from "../../db";
 import { CreateProductInput, UpdateProductInput } from "./product.schema";
-import { ProductDTO } from "../../models";
-import { Product } from "./product.model";
+import { Product } from "../../models";
 import { Sql } from "postgres";
 import { producer } from "../../events/kafka";
 import { EventFactory } from "../../events/model";
 
-const getProducts = async (): Promise<Result<ProductDTO[], StatusError>> => {
+const getProducts = async (): Promise<Result<Product[], StatusError>> => {
   const results = await productRepo.getProducts();
-  return results.apply((products) => products.map(toProductDTO));
+  return results;
 };
 
 const mergeProduct = (
@@ -38,15 +36,14 @@ const mergeProduct = (
 const getProductById = async (
   id: number,
   db: Sql = sql
-): Promise<Result<ProductDTO, StatusError>> => {
-  const result = await productRepo.getProductById(id, db);
-  return result.apply(toProductDTO);
+): Promise<Result<Product, StatusError>> => {
+  return productRepo.getProductById(id, db);
 };
 
 const createProduct = async (
   productReq: CreateProductInput
-): Promise<Result<ProductDTO, StatusError>> => {
-  return transaction<ProductDTO, StatusError>(async (t) => {
+): Promise<Result<Product, StatusError>> => {
+  return transaction<Product, StatusError>(async (t) => {
     const {
       data: { id },
       error,
@@ -58,7 +55,7 @@ const createProduct = async (
     if (getProdError) {
       return Result.failure(getProdError);
     }
-
+    console.log("Product created", product);
     const { error: eventError } = await producer.send(
       EventFactory.productCreatedEvent(product)
     );
@@ -73,33 +70,33 @@ const createProduct = async (
 const updateProduct = async (
   id: number,
   product: UpdateProductInput
-): Promise<Result<ProductDTO, StatusError>> => {
+): Promise<Result<Product, StatusError>> => {
   const { data: current, error } = await productRepo.getProductById(id);
   if (error) {
     return Result.failure(error);
   }
-  return transaction<ProductDTO, StatusError>(async (t) => {
+  return transaction<Product, StatusError>(async (t) => {
     const { error: updateError } = await productRepo.updateProduct(
       id,
       mergeProduct(current, product),
       t
     );
     if (updateError) {
-      return Result.failure<ProductDTO, StatusError>(updateError);
+      return Result.failure<Product, StatusError>(updateError);
     }
     const { data: updatedProduct, error: getError } = await getProductById(
       id,
       t
     );
     if (getError) {
-      return Result.failure<ProductDTO, StatusError>(getError);
+      return Result.failure<Product, StatusError>(getError);
     }
     const { error: eventError } = await producer.send(
       EventFactory.productUpdatedEvent(updatedProduct)
     );
     if (eventError) {
       console.error("Failed to send product updated event", eventError);
-      return Result.failure<ProductDTO, StatusError>(StatusError.Internal());
+      return Result.failure<Product, StatusError>(StatusError.Internal());
     }
     return Result.of(updatedProduct);
   });

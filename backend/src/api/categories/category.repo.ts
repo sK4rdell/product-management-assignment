@@ -1,8 +1,8 @@
 import { Result, StatusError } from "@kardell/result";
 import { sql } from "../../db";
 import { Sql } from "postgres";
-import { ID } from "../../models";
-import { Category, CreateCategoryInput } from "./category.model";
+import { Category, ID } from "../../models";
+import { CreateCategoryInput } from "./categories.schema";
 
 const getCategoryById = async (
   id: number,

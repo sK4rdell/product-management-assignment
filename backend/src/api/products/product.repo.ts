@@ -2,7 +2,7 @@ import { Result, StatusError } from "@kardell/result";
 import { sql } from "../../db";
 import { Sql } from "postgres";
 import { CreateProductInput } from "./product.schema";
-import { ID } from "../../models";
+import { Dimension, ID } from "../../models";
 import { Product } from "./product.model";
 
 const getProducts = async (
@@ -24,19 +24,24 @@ const getProducts = async (
                 'name', c.name,
                 'description', c.description,
                 'createdAt', c.created_at
-                ) as category,
-                json_agg(json_build_object(
-                    'id', s.id,
-                    'quantity', s.quantity,
-                    'location', s.location,
-                    'lastUpdated', s.last_updated
-                    )) as stock
+            ) as category,
+            json_agg(json_build_object(
+                'id', s.id,
+                'quantity', s.quantity,
+                'location', s.location,
+                'lastUpdated', s.last_updated
+            )) as stock
         from products p
             join categories c on p.category_id = c.id
             left join stock s on p.id = s.product_id
         group by p.id, c.id;
     `;
-    return Result.of(res);
+    return Result.of(
+      res.map((p) => ({
+        ...p,
+        dimensions: <Dimension>JSON.parse(String(p.dimensions)),
+      }))
+    );
   } catch (error) {
     console.error("Failed to get products", error);
     return Result.failure(StatusError.Internal());
@@ -78,7 +83,10 @@ const getProductById = async (
     `;
     return Result.fromNullable<Product, StatusError>(product)(
       StatusError.NotFound().withDetails("Product not found")
-    );
+    ).apply((p) => ({
+      ...p,
+      dimensions: <Dimension>JSON.parse(String(p.dimensions)),
+    }));
   } catch (error) {
     console.error("Failed to get product by id", error);
     return Result.failure(StatusError.Internal());
@@ -128,10 +136,13 @@ const insertProduct = async (
   if (!product.stock) {
     return idRes;
   }
+  const stock = product.stock.map((s) => ({ ...s, product_id: idRes.data.id }));
   try {
+    console.log(`
+        insert into stock ${sql(stock, "product_id", "quantity", "location")};
+    `);
     await db`
-        insert into stock (product_id, quantity, location)
-        ${sql(product.stock)};
+        insert into stock ${sql(stock, "product_id", "quantity", "location")};
     `;
     return idRes;
   } catch (error) {
@@ -170,6 +181,7 @@ const updateStock = async (
   product: CreateProductInput,
   db: Sql = sql
 ): Promise<Result<null, StatusError>> => {
+  const stock = product.stock.map((s) => ({ ...s, product_id: id }));
   try {
     await db`
         delete from stock
@@ -177,7 +189,7 @@ const updateStock = async (
     `;
     await db`
         insert into stock (product_id, quantity, location)
-        ${sql(product.stock)};
+        ${sql(stock)};
     `;
     return Result.of(null);
   } catch (error) {

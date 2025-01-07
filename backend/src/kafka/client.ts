@@ -18,9 +18,9 @@ class KafkaError extends Error {
 }
 
 interface SchemaPayload {
-  PRODUCT_CREATED: { eventTime: number; product: Record<string, any> };
-  PRODUCT_UPDATED: { eventTime: number; product: Record<string, any> };
-  PRODUCT_DELETED: { productId: string; timestamp: number };
+  PRODUCT_CREATED: { eventTime: string; product: Record<string, any> };
+  PRODUCT_UPDATED: { eventTime: string; product: Record<string, any> };
+  PRODUCT_DELETED: { productId: string; timestamp: string };
 }
 
 class KafkaProducerClient {

@@ -3,28 +3,47 @@
   "name": "ProductCreated",
   "namespace": "com.ikea.events",
   "fields": [
-    { "name": "eventTime", "type": "long", "logicalType": "timestamp-millis" },
     {
-      "name": "product",
+      "name": "eventTime",
+      "type": "long",
+      "logicalType": "timestamp-millis"
+    },
+    {
+      "name": "payload",
       "type": {
         "type": "record",
         "name": "Product",
         "fields": [
           { "name": "id", "type": "int" },
           { "name": "name", "type": "string" },
-          { "name": "description", "type": "string" },
+          { "name": "description", "type": ["null", "string"] },
           { "name": "price", "type": "double" },
           { "name": "sku", "type": "string" },
-          { "name": "dimensions", "type": "string" },
-          { "name": "weight", "type": "double" },
+          {
+            "name": "dimensions",
+            "type": [
+              "null",
+              {
+                "type": "record",
+                "name": "Dimensions",
+                "fields": [
+                  { "name": "height", "type": "int" },
+                  { "name": "width", "type": "int" },
+                  { "name": "depth", "type": "int" }
+                ]
+              }
+            ]
+          },
+          { "name": "weight", "type": ["null", "int"] },
           {
             "name": "category",
             "type": {
               "type": "record",
               "name": "Category",
               "fields": [
+                { "name": "id", "type": "int" },
                 { "name": "name", "type": "string" },
-                { "name": "description", "type": "string" }
+                { "name": "description", "type": ["null", "string"] }
               ]
             }
           },
@@ -36,8 +55,9 @@
                 "type": "record",
                 "name": "Stock",
                 "fields": [
+                  { "name": "id", "type": "int" },
                   { "name": "quantity", "type": "int" },
-                  { "name": "location", "type": "string" }
+                  { "name": "location", "type": ["null", "string"] }
                 ]
               }
             }

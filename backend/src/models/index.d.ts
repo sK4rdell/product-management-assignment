@@ -4,14 +4,15 @@ type ID = {
   id: number;
 };
 
-type ProductDTO = {
+type Product = {
+  id: number;
   name: string;
   description: string;
   price: number;
   sku: string;
   dimensions: Dimension;
   weight: number;
-  category: CategoryDTO;
+  category: Category;
   stock: StockDTO[];
 };
 
@@ -26,7 +27,11 @@ type StockDTO = {
   location: string;
 };
 
-type CategoryDTO = Pick<Category, "id" | "name" | "description">;
+type Category = {
+  id: number;
+  name: string;
+  description: string;
+};
 
 type DiscountDTO = Pick<
   Discount,

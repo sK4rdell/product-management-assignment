@@ -25,3 +25,6 @@ export const updateCategoryValidationSchema: ValidationSchema = {
   body: updateCategorySchema,
   params: categoryIdSchema.params,
 };
+
+export type CreateCategoryInput = z.infer<typeof createCategorySchema>;
+export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>;

@@ -3,7 +3,11 @@
   "name": "ProductUpdated",
   "namespace": "com.ikea.events",
   "fields": [
-    { "name": "eventTime", "type": "long", "logicalType": "timestamp-millis" },
+    {
+      "name": "eventTime",
+      "type": "string",
+      "logicalType": "iso-datetime"
+    },
     { "name": "product", "type": "Product" }
   ]
 }

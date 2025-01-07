@@ -1,24 +1,21 @@
 import { Result, StatusError } from "@kardell/result";
 import { categoryRepo } from "./category.repo";
-import { toCategoryDTO } from "./category.converter";
-import { CategoryDTO } from "../../models";
-import { CreateCategoryInput, UpdateCategoryInput } from "./category.model";
+import { CreateCategoryInput, UpdateCategoryInput } from "./categories.schema";
+import { Category } from "../../models";
 
 const getCategoryById = async (
   id: number
-): Promise<Result<CategoryDTO, StatusError>> => {
-  const res = await categoryRepo.getCategoryById(id);
-  return res.apply(toCategoryDTO);
+): Promise<Result<Category, StatusError>> => {
+  return categoryRepo.getCategoryById(id);
 };
 
-const getCategories = async (): Promise<Result<CategoryDTO[], StatusError>> => {
-  const res = await categoryRepo.getAllCategories();
-  return res.apply((categories) => categories.map(toCategoryDTO));
+const getCategories = async (): Promise<Result<Category[], StatusError>> => {
+  return categoryRepo.getAllCategories();
 };
 
 const createCategory = async (
   category: CreateCategoryInput
-): Promise<Result<CategoryDTO, StatusError>> => {
+): Promise<Result<Category, StatusError>> => {
   const { data, error } = await categoryRepo.insertCategory(category);
   if (error) {
     return Result.failure(error);
@@ -29,7 +26,7 @@ const createCategory = async (
 const patchCategory = async (
   id: number,
   category: UpdateCategoryInput
-): Promise<Result<CategoryDTO, StatusError>> => {
+): Promise<Result<Category, StatusError>> => {
   const { data: current, error } = await categoryRepo.getCategoryById(id);
   if (error) {
     return Result.failure(error);

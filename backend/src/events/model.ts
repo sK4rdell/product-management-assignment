@@ -1,4 +1,4 @@
-import { ProductDTO } from "../models";
+import { Product } from "../models";
 
 type Topic =
   | "product-events.created.v1"
@@ -6,51 +6,57 @@ type Topic =
   | "product-events.deleted.v1";
 
 type Subject =
-  | "product_created-value"
-  | "product_updated-value"
-  | "product_deleted-value";
+  | "product-created-value"
+  | "product-updated-value"
+  | "product-deleted-value";
 
-export type ServiceEvent<V> = { subject: Subject; topic: Topic; payload: V };
+type EventPayload<V> = { eventTime: number; payload: V };
+
+export type ServiceEvent<V> = {
+  subject: Subject;
+  topic: Topic;
+  payload: EventPayload<V>;
+};
 
 export type ValidEvent =
   | {
-      subject: "product_created-value";
+      subject: "product-created-value";
       topic: "product-events.created.v1";
-      payload: ProductDTO;
+      payload: Product;
     }
   | {
-      subject: "product_updated-value";
+      subject: "product-updated-value";
       topic: "product-events.updated.v1";
-      payload: ProductDTO;
+      payload: Product;
     }
   | {
-      subject: "product_deleted-value";
+      subject: "product-deleted-value";
       topic: "product-events.deleted.v1";
       payload: { id: number };
     };
 
 export class EventFactory {
-  static productCreatedEvent(product: ProductDTO): ServiceEvent<ProductDTO> {
+  static productCreatedEvent(product: Product): ServiceEvent<Product> {
     return {
-      subject: "product_created-value",
+      subject: "product-created-value",
       topic: "product-events.created.v1",
-      payload: product,
+      payload: { eventTime: Date.now(), payload: product },
     };
   }
 
-  static productUpdatedEvent(product: ProductDTO): ServiceEvent<ProductDTO> {
+  static productUpdatedEvent(product: Product): ServiceEvent<Product> {
     return {
-      subject: "product_updated-value",
+      subject: "product-updated-value",
       topic: "product-events.updated.v1",
-      payload: product,
+      payload: { eventTime: Date.now(), payload: product },
     };
   }
 
   static productDeletedEvent(id: number): ServiceEvent<{ id: number }> {
     return {
-      subject: "product_deleted-value",
+      subject: "product-deleted-value",
       topic: "product-events.deleted.v1",
-      payload: { id },
+      payload: { eventTime: Date.now(), payload: { id } },
     };
   }
 }
