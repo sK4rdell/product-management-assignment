@@ -14,7 +14,7 @@ CREATE TABLE products (
     description TEXT,
     price REAL NOT NULL,
     sku VARCHAR(50) UNIQUE NOT NULL,
-    dimensions JSON,
+    dimensions JSONB,
     weight INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

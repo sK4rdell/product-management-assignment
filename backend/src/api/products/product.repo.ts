@@ -36,12 +36,7 @@ const getProducts = async (
             left join stock s on p.id = s.product_id
         group by p.id, c.id;
     `;
-    return Result.of(
-      res.map((p) => ({
-        ...p,
-        dimensions: <Dimension>JSON.parse(String(p.dimensions)),
-      }))
-    );
+    return Result.of(res);
   } catch (error) {
     console.error("Failed to get products", error);
     return Result.failure(StatusError.Internal());
@@ -83,10 +78,7 @@ const getProductById = async (
     `;
     return Result.fromNullable<Product, StatusError>(product)(
       StatusError.NotFound().withDetails("Product not found")
-    ).apply((p) => ({
-      ...p,
-      dimensions: <Dimension>JSON.parse(String(p.dimensions)),
-    }));
+    );
   } catch (error) {
     console.error("Failed to get product by id", error);
     return Result.failure(StatusError.Internal());
@@ -112,7 +104,7 @@ const insertProductRow = async (
           ${product.description},
           ${product.price},
           ${product.sku},
-          ${JSON.stringify(product.dimensions)},
+          ${db.json(product.dimensions)},
           ${product.weight},
           ${product.categoryId}
       ) returning id;
