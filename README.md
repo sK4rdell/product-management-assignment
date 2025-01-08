@@ -120,8 +120,29 @@ yarn test
 The project uses Avro schemas for event serialization, located in [schemas/](schemas/):
 
 - Product events
-- Category events
-- Discount events
+- Category events _(not implemented)_
+- Discount events _(not implemented)_
+
+## Kafka-UI
+
+Kafka-UI is a web-based tool for managing and monitoring Kafka clusters. It provides an intuitive interface for viewing topics, consumer groups, and messages.
+
+### Accessing Kafka-UI
+
+1. Ensure Kafka and Kafka-UI are running:
+
+   ```sh
+   docker-compose up -d
+   ```
+
+2. Open your browser and navigate to `http://localhost:8080` to access Kafka-UI.
+
+### Features
+
+- **Topic Management**: Create, delete, and view topics.
+- **Consumer Groups**: Monitor consumer group offsets and lag.
+- **Message Browsing**: View messages in real-time, filter by key or value.
+- **Schema Registry**: View and manage Avro schemas.
 
 ## Project Structure
 
