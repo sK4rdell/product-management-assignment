@@ -138,9 +138,6 @@ const insertProduct = async (
   }
   const stock = product.stock.map((s) => ({ ...s, product_id: idRes.data.id }));
   try {
-    console.log(`
-        insert into stock ${sql(stock, "product_id", "quantity", "location")};
-    `);
     await db`
         insert into stock ${sql(stock, "product_id", "quantity", "location")};
     `;
@@ -178,7 +175,7 @@ const updateProduct = async (
             description = ${product.description},
             price = ${product.price},
             sku = ${product.sku},
-            dimensions = ${JSON.stringify(product.dimensions)},
+            dimensions = ${db.json(product.dimensions)},
             weight = ${product.weight},
             category_id = ${product.categoryId}
         where id = ${id};
@@ -215,13 +212,19 @@ const updateStock = async (
 const deleteProduct = async (
   id: number,
   db: Sql = sql
-): Promise<Result<null, StatusError>> => {
+): Promise<Result<void, StatusError>> => {
   try {
-    await db`
+    const [{ count }]: [{ count: number }] = await db`
+      with deleted as (
         delete from products
-        where id = ${id};
+        where id = ${id}
+        returning *
+      ) select count(*) from deleted
     `;
-    return Result.of(null);
+    if (count == 0) {
+      return Result.failure(StatusError.NotFound());
+    }
+    return Result.of(undefined);
   } catch (error) {
     console.error("Failed to delete product", error);
     return Result.failure(StatusError.Internal());

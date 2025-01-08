@@ -1,6 +1,5 @@
 import { categoryRepo } from "../../src/api/categories/category.repo";
-import { Category } from "../../src/api/categories/category.model";
-
+import { Category } from "../../src/models";
 import { randProductCategory, randProductDescription } from "@ngneat/falso";
 
 export const createTestCategory = async (input?: {

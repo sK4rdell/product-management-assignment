@@ -3,13 +3,13 @@ import { ValidationSchema } from "../../middlewares/validation";
 
 export const productIdSchema: ValidationSchema = {
   params: z.object({
-    productId: z.number().int(),
+    productId: z.string().regex(/^\d+$/).transform(Number),
   }),
 };
 
 const createProductSchema = z.object({
-  name: z.string(),
-  description: z.string(),
+  name: z.string().min(3),
+  description: z.string().min(10),
   price: z.number().min(0),
   sku: z.string(),
   dimensions: z.object({
@@ -34,8 +34,8 @@ export const createProductValidationSchema: ValidationSchema = {
 export type CreateProductInput = z.infer<typeof createProductSchema>;
 
 const updateProductSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
+  name: z.string().min(3).optional(),
+  description: z.string().min(10).optional(),
   price: z.number().min(0).optional(),
   sku: z.string().optional(),
   dimensions: z

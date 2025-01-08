@@ -1,8 +1,8 @@
 import { describe, expect, test } from "@jest/globals";
-import { Category, CreateCategoryInput } from "./category.model";
 import { http } from "../../../tests/helpers/http";
-import { CategoryDTO } from "../../models";
 import { createTestCategory } from "../../../tests/helpers/category";
+import { Category } from "../../models";
+import { CreateCategoryInput } from "./categories.schema";
 
 describe("Categories API", () => {
   describe("POST /categories", () => {
@@ -28,7 +28,7 @@ describe("Categories API", () => {
 
     test("should return 201 if input is valid", async () => {
       // Arrange
-      const resp = await http.post<CategoryDTO>("api/categories", validInput);
+      const resp = await http.post<Category>("api/categories", validInput);
       expect(resp.error).toBeFalsy();
       expect(resp.data).toBeTruthy();
       expect(resp.data).toMatchObject({
@@ -45,7 +45,7 @@ describe("Categories API", () => {
     });
 
     test("should return 200 with a list of categories", async () => {
-      const resp = await http.get<CategoryDTO[]>("api/categories");
+      const resp = await http.get<Category[]>("api/categories");
       expect(resp.error).toBeFalsy();
       expect(resp.data).toBeTruthy();
       expect(resp.data).toContainEqual(category);
@@ -79,7 +79,7 @@ describe("Categories API", () => {
     );
 
     test("should return 200 if input is valid", async () => {
-      const resp = await http.patch<CategoryDTO>(
+      const resp = await http.patch<Category>(
         `api/categories/${category.id}`,
         validInput
       );
@@ -105,7 +105,7 @@ describe("Categories API", () => {
     });
 
     test("should return 200 with a category", async () => {
-      const resp = await http.get<CategoryDTO>(`api/categories/${category.id}`);
+      const resp = await http.get<Category>(`api/categories/${category.id}`);
       expect(resp.error).toBeFalsy();
       expect(resp.data).toBeTruthy();
       expect(resp.data).toMatchObject(category);

@@ -88,6 +88,7 @@ const updateProduct = async (
       id,
       t
     );
+
     if (getError) {
       return Result.failure<Product, StatusError>(getError);
     }
