@@ -6,7 +6,9 @@ import { createTestProduct } from "../../../tests/helpers/product";
 import * as falso from "@ngneat/falso";
 import { createTestCategory } from "../../../tests/helpers/category";
 import { Category } from "../../models";
+import { setCacheMode } from "../../cache";
 
+setCacheMode("script");
 describe("Products API", () => {
   let category: Category;
 

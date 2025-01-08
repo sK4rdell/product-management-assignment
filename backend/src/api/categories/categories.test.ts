@@ -3,7 +3,8 @@ import { http } from "../../../tests/helpers/http";
 import { createTestCategory } from "../../../tests/helpers/category";
 import { Category } from "../../models";
 import { CreateCategoryInput } from "./categories.schema";
-
+import { setCacheMode } from "../../cache";
+setCacheMode("script");
 describe("Categories API", () => {
   describe("POST /categories", () => {
     const validInput: CreateCategoryInput = {
@@ -126,7 +127,6 @@ describe("Categories API", () => {
 
     test("should return ok if category is deleted", async () => {
       const resp = await http.delete(`api/categories/${category.id}`);
-      console.log("resp", resp);
       expect(resp.error).toBeFalsy();
     });
 
