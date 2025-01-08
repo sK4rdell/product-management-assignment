@@ -9,8 +9,12 @@
       "logicalType": "timestamp-millis"
     },
     {
-      "name": "id",
-      "type": "int"
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "ProductId",
+        "fields": [{ "name": "id", "type": "int" }]
+      }
     }
   ]
 }
