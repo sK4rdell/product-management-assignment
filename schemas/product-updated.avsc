@@ -1,13 +1,16 @@
 {
+  "namespace": "com.ikea.events",
   "type": "record",
   "name": "ProductUpdated",
-  "namespace": "com.ikea.events",
   "fields": [
     {
       "name": "eventTime",
-      "type": "string",
-      "logicalType": "iso-datetime"
+      "type": "long",
+      "logicalType": "timestamp-millis"
     },
-    { "name": "product", "type": "Product" }
+    {
+      "name": "payload",
+      "type": "com.ikea.events.Product"
+    }
   ]
 }

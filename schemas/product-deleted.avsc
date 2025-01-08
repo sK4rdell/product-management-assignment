@@ -1,15 +1,16 @@
 {
   "type": "record",
   "name": "ProductDeleted",
-  "namespace": "com.example",
+  "namespace": "com.ikea.events",
   "fields": [
     {
-      "name": "productId",
-      "type": "string"
+      "name": "eventTime",
+      "type": "long",
+      "logicalType": "timestamp-millis"
     },
     {
-      "name": "timestamp",
-      "type": "long"
+      "name": "id",
+      "type": "int"
     }
   ]
 }

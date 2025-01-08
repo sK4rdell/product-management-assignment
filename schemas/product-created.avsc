@@ -10,60 +10,7 @@
     },
     {
       "name": "payload",
-      "type": {
-        "type": "record",
-        "name": "Product",
-        "fields": [
-          { "name": "id", "type": "int" },
-          { "name": "name", "type": "string" },
-          { "name": "description", "type": ["null", "string"] },
-          { "name": "price", "type": "double" },
-          { "name": "sku", "type": "string" },
-          {
-            "name": "dimensions",
-            "type": [
-              "null",
-              {
-                "type": "record",
-                "name": "Dimensions",
-                "fields": [
-                  { "name": "height", "type": "int" },
-                  { "name": "width", "type": "int" },
-                  { "name": "depth", "type": "int" }
-                ]
-              }
-            ]
-          },
-          { "name": "weight", "type": ["null", "int"] },
-          {
-            "name": "category",
-            "type": {
-              "type": "record",
-              "name": "Category",
-              "fields": [
-                { "name": "id", "type": "int" },
-                { "name": "name", "type": "string" },
-                { "name": "description", "type": ["null", "string"] }
-              ]
-            }
-          },
-          {
-            "name": "stock",
-            "type": {
-              "type": "array",
-              "items": {
-                "type": "record",
-                "name": "Stock",
-                "fields": [
-                  { "name": "id", "type": "int" },
-                  { "name": "quantity", "type": "int" },
-                  { "name": "location", "type": ["null", "string"] }
-                ]
-              }
-            }
-          }
-        ]
-      }
+      "type": "com.ikea.events.Product"
     }
   ]
 }
