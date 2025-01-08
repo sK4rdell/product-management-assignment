@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name TEXT NOT NULL,
     description TEXT,
     updated_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -10,10 +10,10 @@ CREATE TABLE categories (
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     category_id INTEGER REFERENCES categories(id),
-    name VARCHAR(200) NOT NULL,
+    name TEXT NOT NULL,
     description TEXT,
     price REAL NOT NULL,
-    sku VARCHAR(50) UNIQUE NOT NULL,
+    sku TEXT UNIQUE NOT NULL,
     dimensions JSONB,
     weight INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -23,17 +23,17 @@ CREATE TABLE stock (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
     quantity INTEGER NOT NULL DEFAULT 0,
-    location VARCHAR(100),
+    location TEXT,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    customer_name VARCHAR(200) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    customer_name TEXT NOT NULL,
+    email TEXT NOT NULL,
     address TEXT NOT NULL,
     total_amount INTEGER NOT NULL,
-    status VARCHAR(50) DEFAULT 'pending',
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
