@@ -19,7 +19,6 @@ const transaction = async <T, E extends Error = Error>(
     });
     return Result.of<T, E>(txRes as T);
   } catch (error) {
-    console.error("Failed to execute transaction", error);
     return Result.failure<T, E>(<E>error);
   }
 };

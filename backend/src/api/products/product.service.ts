@@ -55,12 +55,10 @@ const createProduct = async (
     if (getProdError) {
       return Result.failure(getProdError);
     }
-    console.log("Product created", product);
     const { error: eventError } = await producer.send(
       EventFactory.productCreatedEvent(product)
     );
     if (eventError) {
-      console.error("Failed to send product created event", eventError);
       return Result.failure(StatusError.Internal());
     }
     return Result.of(product);
