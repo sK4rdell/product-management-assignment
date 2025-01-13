@@ -24,4 +24,14 @@ const transaction = async <T, E extends Error = Error>(
   }
 };
 
-export { sql, transaction };
+const dbHealthy = async (): Promise<boolean> => {
+  try {
+    await sql`SELECT 1`;
+    return true;
+  } catch (error) {
+    console.error("Failed to ping database", error);
+    return false;
+  }
+};
+
+export { sql, transaction, dbHealthy };
